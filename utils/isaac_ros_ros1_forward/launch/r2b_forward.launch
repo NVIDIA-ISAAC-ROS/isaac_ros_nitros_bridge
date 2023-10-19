@@ -1,0 +1,14 @@
+<launch> 
+  <node pkg="nodelet"
+        type="nodelet"
+        name="standalone_nodelet" 
+        args="manager"
+        output="screen"/>
+  <remap from="/ROS1ForwardNode/forward_input" to="/r2b/ros2_input_image" />
+  <remap from="/ROS1ForwardNode/forward_output" to="/r2b/ros2_output_image" />
+  <node pkg="nodelet"
+        type="nodelet"
+        name="ROS1ForwardNode"
+        args="load isaac_ros_ros1_forward/ROS1ForwardNode standalone_nodelet"
+        output="screen"/>
+</launch>
