@@ -20,7 +20,7 @@
 
 <package format="2">
   <name>isaac_ros_nitros_bridge_ros1</name>
-  <version>2.0.0</version>
+  <version>2.1.0</version>
   <description>Converter between NITROS bridge messages and ROS1 messages</description>
   <maintainer email="yuankunz@nvidia.com">Yuankun Zhu</maintainer>
   <license>Apache-2.0</license>
