@@ -67,6 +67,7 @@ install(TARGETS isaac_ros_nitros_bridge_ros1
 
 install(FILES
   launch/r2b_converter.launch
+  launch/isaac_ros_image_converter.launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
 )
 
