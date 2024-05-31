@@ -57,7 +57,7 @@ computing performance and reduces end to end latency across versions of ROS.
 ## Performance
 
 Isaac ROS NITROS Bridge can move 1080p images between ROS 1 Noetic and Isaac ROS NITROS packages up to 3x faster than the available [ros1_bridge](https://github.com/ros2/ros1_bridge).
-See [Isaac ROS Benchmark](https://nvidia-isaac-ros.github.io/repositories_and_packages/isaac_ros_benchmark/index.html) scripts for [NITROS bridge](https://github.com/NVIDIA-ISAAC-ROS/isaac_ros_benchmark/blob/main/scripts/isaac_ros_nitros_bridge.py) and [ros1_bridge](https://github.com/NVIDIA-ISAAC-ROS/isaac_ros_benchmark/blob/main/scripts/isaac_ros_nitros_bridge_reference.py).
+See [Isaac ROS Benchmark](https://nvidia-isaac-ros.github.io/repositories_and_packages/isaac_ros_benchmark/index.html) scripts for [NITROS bridge](https://github.com/NVIDIA-ISAAC-ROS/isaac_ros_benchmark/blob/main/benchmarks/isaac_ros_nitros_bridge_benchmark/scripts/isaac_ros_nitros_bridge.py) and [ros1_bridge](https://github.com/NVIDIA-ISAAC-ROS/isaac_ros_benchmark/blob/main/benchmarks/isaac_ros_nitros_bridge_benchmark/scripts/isaac_ros_nitros_bridge_reference.py).
 
 ## Documentation
 
