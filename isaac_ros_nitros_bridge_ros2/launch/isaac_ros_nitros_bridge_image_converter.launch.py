@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: NVIDIA CORPORATION & AFFILIATES
-# Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# Copyright (c) 2023-2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,10 +15,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import os
-import subprocess
-import time
-
 import launch
 
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
@@ -27,59 +23,10 @@ from launch_ros.actions import ComposableNodeContainer
 from launch_ros.descriptions import ComposableNode
 import launch_testing.actions
 
-ROS1_INSTALL_PATH = 'install_isolated/setup.bash'
-BRIDGE_CONFIG_PATH = 'src/isaac_ros_nitros_bridge/config/nitros_bridge_no_namespace.yaml'
-
 
 def launch_setup(context):
-    ros1_ws_path = LaunchConfiguration('ros1_ws_path').perform(context)
     pub_image_name = LaunchConfiguration('pub_image_name').perform(context)
     sub_image_name = LaunchConfiguration('sub_image_name').perform(context)
-
-    roscore_cmd = 'source /opt/ros/noetic/setup.bash && roscore'
-    subprocess.Popen(
-        roscore_cmd,
-        env=os.environ,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=True,
-        executable='/bin/bash'
-    )
-    # Wait one second to ensure roscore is fully launched
-    time.sleep(1)
-
-    ros1_setup_path = os.path.join(ros1_ws_path, ROS1_INSTALL_PATH)
-    stop_ros_nodes_cmd = f'source {ros1_setup_path} && rosnode kill -a'
-    subprocess.run(
-        stop_ros_nodes_cmd,
-        env=os.environ,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=True,
-        executable='/bin/bash'
-    )
-
-    bridge_config_absolute_path = os.path.join(ros1_ws_path, BRIDGE_CONFIG_PATH)
-    ros1_converter_cmd = f'source {ros1_setup_path} \
-        && rosparam load {bridge_config_absolute_path} \
-        && roslaunch isaac_ros_nitros_bridge_ros1 isaac_ros_image_converter.launch'
-    subprocess.Popen(
-        ros1_converter_cmd,
-        env=os.environ,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=True,
-        executable='/bin/bash'
-    )
-
-    ros1_bridge_cmd = 'ros2 run ros1_bridge parameter_bridge'
-    subprocess.Popen(
-        ros1_bridge_cmd,
-        env=os.environ,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=True
-    )
 
     ros2_converter = ComposableNode(
         name='ros2_converter',
@@ -108,14 +55,11 @@ def launch_setup(context):
 def generate_launch_description():
     launch_args = [
         DeclareLaunchArgument(
-            'ros1_ws_path',
-            description='Path of the ros1 workspace'),
-        DeclareLaunchArgument(
             'pub_image_name',
-            description='Path of the ros1 workspace'),
+            description='Remapped publish image name of NITROS Bridge ROS2'),
         DeclareLaunchArgument(
             'sub_image_name',
-            description='Path of the ros1 workspace'),
+            description='Remapped subscribe image name of NITROS Bridge ROS2'),
     ]
 
     nodes = launch_args + [OpaqueFunction(function=launch_setup)]

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: NVIDIA CORPORATION & AFFILIATES
-# Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# Copyright (c) 2023-2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,16 +28,34 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake_auto REQUIRED)
+find_package(CUDAToolkit REQUIRED)
 ament_auto_find_build_dependencies()
 
 # Image converter node
 ament_auto_add_library(image_converter_node SHARED src/image_converter_node.cpp)
+target_link_libraries(image_converter_node CUDA::cuda_driver)
+set_target_properties(image_converter_node PROPERTIES
+  BUILD_WITH_INSTALL_RPATH TRUE
+  BUILD_RPATH_USE_ORIGIN TRUE
+  INSTALL_RPATH_USE_LINK_PATH TRUE
+)
+
+
 rclcpp_components_register_nodes(image_converter_node "nvidia::isaac_ros::nitros_bridge::ImageConverterNode")
 set(node_plugins "${node_plugins}nvidia::isaac_ros::nitros_bridge::ImageConverterNode;$<TARGET_FILE:image_converter_node>\n")
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
+
+
+  # The FindPythonInterp and FindPythonLibs modules are removed
+  if(POLICY CMP0148)
+    cmake_policy(SET CMP0148 OLD)
+  endif()
+
+  find_package(launch_testing_ament_cmake REQUIRED)
+  # add_launch_test(test/isaac_ros_nitros_bridge_test_pol.py TIMEOUT "15")
 endif()
 
 ament_auto_package(INSTALL_TO_SHARE launch)

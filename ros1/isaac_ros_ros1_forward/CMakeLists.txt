@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: NVIDIA CORPORATION & AFFILIATES
-# Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# Copyright (c) 2023-2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 cmake_minimum_required(VERSION 3.22.1)
-project(isaac_ros_nitros_bridge_ros1)
+project(isaac_ros_ros1_forward)
 
 if($ENV{ROS_VERSION} EQUAL 2)
   message(STATUS "Skip package ${PROJECT_NAME} for ROS 2")
@@ -29,47 +29,31 @@ find_package(
              std_msgs
              sensor_msgs
              roscpp
-             nodelet)
-find_package(isaac_ros_nitros_bridge_msgs REQUIRED)
-find_package(CUDA REQUIRED)
-set(CMAKE_CUDA_ARCHITECTURES "89;87;86;80;75;72;70;61;60")
-
-#find_package(cv_bridge REQUIRED)
-#find_package(OpenCV 4 REQUIRED COMPONENTS opencv_core opencv_imgproc opencv_imgcodecs)
+             nodelet
+             topic_tools)
 
 include_directories( 
     include 
-    ${CUDA_INCLUDE_DIRS}
-    ${catkin_INCLUDE_DIRS}
-    ${isaac_ros_nitros_bridge_msgs_INCLUDE_DIRS})
+    ${catkin_INCLUDE_DIRS})
 
-catkin_package(CATKIN_DEPENDS message_runtime std_msgs sensor_msgs isaac_ros_nitros_bridge_msgs)
+catkin_package(CATKIN_DEPENDS message_runtime std_msgs sensor_msgs)
 
 #############
 ## Library ##
 #############
 
-add_library(isaac_ros_nitros_bridge_ros1
-    src/image_converter_node.cpp)
+add_library(isaac_ros_ros1_forward 
+    src/ros1_forward_node.cpp)
 
-target_link_libraries(isaac_ros_nitros_bridge_ros1 
-    ${catkin_LIBRARIES} 
-    #opencv_core 
-    ${CUDA_CUDA_LIBRARY} 
-    ${CUDA_CUDART_LIBRARY})
+target_link_libraries(isaac_ros_ros1_forward 
+    ${catkin_LIBRARIES} )
 
 #############
 ## Install ##
 #############
 
-install(TARGETS isaac_ros_nitros_bridge_ros1
+install(TARGETS isaac_ros_ros1_forward
   DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
-
-install(FILES
-  launch/r2b_converter.launch
-  launch/isaac_ros_image_converter.launch
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
-)
 
 install(FILES
   nodelet_plugins.xml

@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: NVIDIA CORPORATION & AFFILIATES
-// Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+// Copyright (c) 2023-2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@
 #ifndef ISAAC_ROS_NITROS_BRIDGE_ROS1__IMAGE_CONVERTER_NODE_HPP_
 #define ISAAC_ROS_NITROS_BRIDGE_ROS1__IMAGE_CONVERTER_NODE_HPP_
 
-#include <sstream>
-#include <chrono>
 #include <cuda_runtime_api.h>
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
+#include <sstream>
+#include <chrono>
 
 #include "ros/ros.h"
 #include "std_msgs/String.h"
@@ -63,12 +63,14 @@ private:
 
   // Numboer of blocks of device memory pool
   int num_blocks_;
-  // Map between CUDA memory handle bytes to device pointer
-  std::map<std::vector<uint8_t>, void *> handle_ptr_map_;
+  // Map between FD and device memory pointer
+  std::map<int32_t, CUdeviceptr> handle_ptr_map_;
   // CUDA IPC memory pool manager
   std::shared_ptr<IPCBufferManager> ipc_buffer_manager_;
   // If received first message
   bool first_msg_received_ = false;
+  // CUDA driver context
+  CUcontext m_ctx;
 };
 
 }  // namespace nitros_bridge
