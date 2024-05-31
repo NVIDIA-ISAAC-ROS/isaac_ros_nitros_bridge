@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: NVIDIA CORPORATION & AFFILIATES
-// Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+// Copyright (c) 2023-2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -73,12 +73,14 @@ private:
 
   // Number of blocks of the device memory pool
   int64_t num_blocks_;
-  // Map between CUDA memory handle bytes to device pointer
-  std::map<std::vector<uint8_t>, void *> handle_ptr_map_;
+  // Map between FD and device memory pointer
+  std::map<int32_t, CUdeviceptr> handle_ptr_map_;
   // CUDA IPC memory pool manager
   std::shared_ptr<IPCBufferManager> ipc_buffer_manager_;
-  // If received first message
+  // If received the first message
   bool first_msg_received_ = false;
+  // CUDA driver context
+  CUcontext m_ctx;
 };
 
 }  // namespace nitros_bridge

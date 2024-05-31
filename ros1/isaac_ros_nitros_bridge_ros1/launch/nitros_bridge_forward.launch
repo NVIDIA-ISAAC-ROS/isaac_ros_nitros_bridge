@@ -1,5 +1,3 @@
-<?xml version="1.0"?>
-
 <!--
  SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
@@ -18,21 +16,22 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 
+<!--
+ Usage: Used for the nitros bridge reference benchmark, 
+        send messages from ROS2 through ROS 1 bridge, receive from ROS 1 and echo back to ROS 2
+ Components:
+  - ImageConverterNode
+  - ROS1ForwardNode
+-->
+
 <launch> 
   <node pkg="nodelet"
         type="nodelet"
         name="standalone_nodelet" 
         args="manager"
         output="screen"/>
-  <remap from="/ImageConverterNode/ros1_input_bridge_image" to="/r2b/ros1_input_bridge_image"/>
-  <remap from="/ImageConverterNode/ros1_output_bridge_image" to="/r2b/ros1_output_bridge_image"/>
-  <node pkg="nodelet"
-        type="nodelet"
-        name="ImageConverterNode"
-        args="load isaac_ros_nitros_bridge_ros1/ImageConverterNode standalone_nodelet"
-        output="screen"/>
-  <remap from="/ROS1ForwardNode/forward_input" to="/ImageConverterNode/ros1_output_image" />
-  <remap from="/ROS1ForwardNode/forward_output" to="/ImageConverterNode/ros1_input_image" />
+  <remap from="/ROS1ForwardNode/forward_input" to="/r2b/ros2_input_image" />
+  <remap from="/ROS1ForwardNode/forward_output" to="/r2b/ros2_output_image" />
   <node pkg="nodelet"
         type="nodelet"
         name="ROS1ForwardNode"

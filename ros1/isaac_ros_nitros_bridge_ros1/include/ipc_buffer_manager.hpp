@@ -15,18 +15,14 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-#ifndef ISAAC_ROS_NITROS_BRIDGE_ROS2__IPC_BUFFER_MANAGER_HPP_
-#define ISAAC_ROS_NITROS_BRIDGE_ROS2__IPC_BUFFER_MANAGER_HPP_
+#ifndef ISAAC_ROS_NITROS_BRIDGE_ROS1__IPC_BUFFER_MANAGER_HPP_
+#define ISAAC_ROS_NITROS_BRIDGE_ROS1__IPC_BUFFER_MANAGER_HPP_
 
 #include <cuda_runtime_api.h>
 #include <cuda.h>
 #include <sys/syscall.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include <unistd.h> 
 #include <vector>
-
-#include "rclcpp/rclcpp.hpp"
-
 
 namespace nvidia
 {
@@ -55,11 +51,9 @@ public:
     auto cuda_err = cuMemGetAllocationGranularity(
       &granularity, &prop, CU_MEM_ALLOC_GRANULARITY_MINIMUM);
     if (CUDA_SUCCESS != cuda_err) {
-      const char * error_str = NULL;
-      cuGetErrorString(cuda_err, &error_str);
-      RCLCPP_ERROR(
-        rclcpp::get_logger("IPCBufferManager"), "Failed to call cuMemGetAllocationGranularity %s",
-        error_str);
+      const char *errorStr = NULL;
+      cuGetErrorString(cuda_err, &errorStr);
+      ROS_ERROR( "Failed to call cuMemGetAllocationGranularity %s", errorStr);
     }
     alloc_size_ = buffer_step - (buffer_step % granularity) + granularity;
 
@@ -67,11 +61,9 @@ public:
       CUmemGenericAllocationHandle generic_allocation_handle;
       auto cuda_err = cuMemCreate(&generic_allocation_handle, alloc_size_, &prop, 0);
       if (CUDA_SUCCESS != cuda_err) {
-        const char * error_str = NULL;
-        cuGetErrorString(cuda_err, &error_str);
-        RCLCPP_ERROR(
-          rclcpp::get_logger("IPCBufferManager"), "Failed to call cuMemCreate %s",
-          error_str);
+        const char *errorStr = NULL;
+        cuGetErrorString(cuda_err, &errorStr);
+        ROS_ERROR( "Failed to call cuMemCreate %s", errorStr);
       }
 
       int fd = -1;
@@ -80,30 +72,24 @@ public:
         generic_allocation_handle,
         CU_MEM_HANDLE_TYPE_POSIX_FILE_DESCRIPTOR, 0);
       if (CUDA_SUCCESS != cuda_err) {
-        const char * error_str = NULL;
-        cuGetErrorString(cuda_err, &error_str);
-        RCLCPP_ERROR(
-          rclcpp::get_logger("IPCBufferManager"), "Failed to cuMemExportToShareableHandle %s",
-          error_str);
+        const char *errorStr = NULL;
+        cuGetErrorString(cuda_err, &errorStr);
+        ROS_ERROR( "Failed to call cuMemExportToShareableHandle %s", errorStr);
       }
 
       CUdeviceptr d_ptr = 0ULL;
       cuda_err = cuMemAddressReserve(&d_ptr, alloc_size_, 0, 0, 0);
       if (CUDA_SUCCESS != cuda_err) {
-        const char * error_str = NULL;
-        cuGetErrorString(cuda_err, &error_str);
-        RCLCPP_ERROR(
-          rclcpp::get_logger("IPCBufferManager"), "Failed to call cuMemCreate %s",
-          error_str);
+        const char *errorStr = NULL;
+        cuGetErrorString(cuda_err, &errorStr);
+        ROS_ERROR( "Failed to call cuMemCreate %s", errorStr);
       }
 
       cuda_err = cuMemMap(d_ptr, alloc_size_, 0, generic_allocation_handle, 0);
       if (CUDA_SUCCESS != cuda_err) {
-        const char * error_str = NULL;
-        cuGetErrorString(cuda_err, &error_str);
-        RCLCPP_ERROR(
-          rclcpp::get_logger("IPCBufferManager"), "Failed to call cuMemCreate %s",
-          error_str);
+        const char *errorStr = NULL;
+        cuGetErrorString(cuda_err, &errorStr);
+        ROS_ERROR("Failed to call cuMemCreate %s", errorStr);
       }
 
       CUmemAccessDesc accessDesc = {};
@@ -112,11 +98,9 @@ public:
       accessDesc.flags = CU_MEM_ACCESS_FLAGS_PROT_READWRITE;
       cuda_err = cuMemSetAccess(d_ptr, alloc_size_, &accessDesc, 1);
       if (CUDA_SUCCESS != cuda_err) {
-        const char * error_str = NULL;
-        cuGetErrorString(cuda_err, &error_str);
-        RCLCPP_ERROR(
-          rclcpp::get_logger("IPCBufferManager"), "Failed to call cuMemSetAccess %s",
-          error_str);
+        const char *errorStr = NULL;
+        cuGetErrorString(cuda_err, &errorStr);
+        ROS_ERROR( "Failed to call cuMemSetAccess %s", errorStr);
       }
 
       buffer_ptrs_.push_back(d_ptr);
@@ -140,7 +124,6 @@ public:
     current_handle_index_ += 1;
     if (current_handle_index_ == buffer_size_) {
       current_handle_index_ = 0;
-      RCLCPP_DEBUG(rclcpp::get_logger("IPCBufferManager"), "Reset buffer manager index to start.");
     }
   }
 
@@ -151,7 +134,7 @@ public:
   }
 
   // Get the FD exported from current device memory block
-  std::vector<int> & get_cur_ipc_mem_handle()
+  std::vector<int> &get_cur_ipc_mem_handle()
   {
     return shareable_handles_[current_handle_index_];
   }
@@ -171,4 +154,4 @@ private:
 }  // namespace isaac_ros
 }  // namespace nvidia
 
-#endif  // ISAAC_ROS_NITROS_BRIDGE_ROS2__IPC_BUFFER_MANAGER_HPP_
+#endif  // ISAAC_ROS_NITROS_BRIDGE_ROS1__IPC_BUFFER_MANAGER_HPP_
