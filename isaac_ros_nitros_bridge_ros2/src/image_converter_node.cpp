@@ -143,7 +143,7 @@ void ImageConverterNode::ROS1To2Callback(
   nvidia::isaac_ros::nitros::NitrosImage nitros_image =
     nvidia::isaac_ros::nitros::NitrosImageBuilder()
     .WithHeader(msg->header)
-    .WithEncoding(img_encodings::RGB8)
+    .WithEncoding(msg->encoding)
     .WithDimensions(msg->height, msg->width)
     .WithGpuData(reinterpret_cast<void *>(gpu_buffer))
     .Build();
